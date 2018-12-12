@@ -19,19 +19,25 @@ public with sharing class StockItemHandler {
             {NewNames.add (si.Item_Name__c);
             }
             List <Stock_Item__c> dupedStockItems = [Select Item_Name__c FROM Stock_Item__c WHERE Item_Name__c IN:newNames];
+            
+            //***this is where we need to loop through duped stock items, then we need to add them to a separate list***
+            //****We also need to be careful not to compare a string to a list.
         	
+            
         //create a list to hold any new items we might update
             For (Stock_Item__c s: newStockItems){
                 
            
-                if (dupedStockItems.Item_Name__c=s.Item_Name__c){
+                //if (dupedStockItems.Item_Name__c=s.Item_Name__c)
+                if (dupedStockItems.contains(s.Item_Name__c)
+                    {
                 s.Item_Name__c = s.Item_Name__c + ' Duplicated Item' ;}
          
     }
-            insert s;
+            // Don't need this DML because we are working with a before trigger: NO insert s;
     //before delete method. Before a Stock Item is deleted, make sure that the stock on hand is at 0.  If it is not, Create a case so that someone is alerted.
     //The case should indicate the name of the item that was deleted, the id, and the number of stock that were on hand when it was deleted in the description.  The rest of the case can be configured however you think best.
-       public static void onBeforeDelete(List<Stock_Item__c> newStockItem){
+       //public static void onBeforeDelete(List<Stock_Item__c> newStockItem){
     	//Create an empty Stock Items List 
     	//For all the Stock Items in NewStockItem, if Stock_on_Hand__c is 0 then add to empty Stock Items List
     	//Delete empty Stock Items List
@@ -44,4 +50,5 @@ public with sharing class StockItemHandler {
 
 
     
+}
 }
