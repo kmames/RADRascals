@@ -1,0 +1,68 @@
+//A Utility class to process Stock Item records from the Stock Item Handler
+public with sharing class StockItemHandler {
+    
+    //Default Constructor
+    public StockItemHandler() {
+        
+        
+    }
+    //Handler Methods
+    //Create methods here to handle the before insert, before delete and utility processes described in the requirements
+    //They should accept lists of Stock_Item__c records from the trigger
+    //Probably implying that we should bulkify our code for the list... as opposed to one record.
+    
+    //before insert method. Before a Stock Item can be created, check that there is not already a stock item record with a matching name.
+    //If there is already a Stock Item with that name, change the name so that it is the name entered, plus the words “Duplicate Item”.  We have a process in place to check for these elsewhere.
+    //Alternative (Bonus): Instead of renaming, add a Trigger Exception error as described here 
+    public static void checkDuplicate(List<Stock_Item__c> newStockItems){
+        
+        //create set containing all the names from the list of new records (used for the query below)
+        Set<string> newNames = new Set<string>();
+        for(Stock_Item__c si: newStockItems){
+            newNames.add(si.Item_Name__c);
+        }
+        //query Stock_Item__c to pull in all records that already exist with the same names. 
+        //then create set containing all the names in this list of already existing records
+        List<Stock_Item__c> dupedStockItems = [SELECT Item_Name__c
+                                               FROM Stock_Item__c
+                                               WHERE Item_Name__c in :newNames];
+        Set<string> dupNames = new Set<string>();
+        for(Stock_Item__c si : dupedStockItems){
+            dupNames.add(si.Item_Name__c);
+        }
+        
+        //for each new item, check if the name of the item is in the set of already existing names. if it is then update the name.
+        for(Stock_Item__c si : newStockItems){
+            String siName = si.Item_Name__c;
+            if(dupNames.contains(siName)){
+                si.Item_Name__c=si.Item_Name__c+' Duplicate Item';
+            }
+        } 
+    }
+    //before delete method. Before a Stock Item is deleted, make sure that the stock on hand is at 0.  If it is not, Create a case so that someone is alerted.
+    //The case should indicate the name of the item that was deleted, the id, and the number of stock that were on hand when it was deleted in the description.  The rest of the case can be configured however you think best.
+    public static void onBeforeDelete(List<Stock_Item__c> toDelete) {
+        
+        //The case should indicate the name of the item that was deleted, the id, and the number of stock that were on hand when it was deleted in the description.  
+        //Include the following fields for the Stock Items it returns: ID, Item_Name__c, Item_Stock_is_Low__c, Minimum_Stock_Level__c, Stock_on_Hand__c
+        //The rest of the case can be configured however you think best.
+        
+        //After inserting new Stock Items we want to Create a new case for the Stock Item on hand that is NOT at 0.  
+        List<Case> newCases = new List<Case>(); 
+        
+        for (Stock_Item__c d: toDelete){
+          if(d.Stock_on_Hand__c > 0){
+                Case cs = new Case();
+                cs.Status = 'New';
+                cs.Subject = 'Deleted item has stock items';
+                cs.Description = 'd.Item.Stock_on_Hand__c ' + 'd.Item.Item_Name__c '+ 'd.Item.ID ';
+                newCases.add(cs);
+            }        		
+                }
+                insert newCases; 
+                }                
+                public static List<Stock_Item__c> getLowItems(){
+                    List<Stock_Item__c> lowItems = [SELECT ID, Item_Name__c, Item_Stock_is_Low__c, Stock_on_Hand__c FROM Stock_Item__c WHERE Item_Stock_is_Low__c = TRUE];
+                        return lowItems;
+     }
+ }                     
