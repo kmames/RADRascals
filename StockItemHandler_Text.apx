@@ -1,0 +1,39 @@
+@isTest
+private class StockItemHandler_Test {
+	
+	@isTest static void testBeforeInsertFunctionality() {
+		//Positive Scenario: insert Stock Item. insert 2nd stock item with same name. 
+			//check that there are >1 items with same name, one of them will have the
+			//regular name and the other will have same name + Duplicate Item.
+		//Negative Scenario: insert two stock items with different names.
+			//check that both of them do not have Duplicate Item in the name.
+	}
+	
+	@isTest static void testBeforeDeleteFunctionality() {
+		//Positive Scenario:
+			//insert item with stock on hand > 0; delete item; check that case was created.
+		//Negative Scenario:
+			//insert item with stock on hand = 0; delete item; check that case was not created.
+        //Bulk Scenario:
+        	//insert multiple items some with stock on hand > 0 some = 0; delete all items;
+        	//check the # of cases created = the number of cases with stock on hand > 0.
+	}
+
+	@isTest static void testGetLowStockItems() {
+		//Positive Scenario:
+			//insert a few items with low stock; check that query returns 1 or more results. (listname.size()>0)
+		//Negative Scenario:
+			//insert a few items without low stock; check that query returns 0 results. (listname.size()=0)
+	}
+
+	@isTest static void packageUploadCoverage() {
+		Stock_Item__c item = new Stock_Item__c();
+		item.Item_Name__c = 'Test';
+		item.Description__c = 'Test';
+		item.Minimum_Stock_Level__c =3;
+
+		insert item;
+
+	}
+	
+}
