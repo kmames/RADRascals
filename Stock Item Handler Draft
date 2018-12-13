@@ -34,4 +34,21 @@ public with sharing class StockItemHandler {
     //Shouldn't insert be in here?
     }
     }
+    
+    //before delete
+    //for all the items in list, check if stock on hand is at 0. if no then create case before deleting.
+    public static void checkInStock(List<Stock_Item__c> dltStockItems){
+        List<Case> dltStockCases = new List<Case>();
+        for(Stock_Item__c si : dltStockItems){
+            if(si.Stock_on_Hand__c!=0){
+                Case c = new Case(  Origin = 'Web',
+                                    Subject = 'In Stock Item Deleted: ' + si.Item_Name__c,
+                                    Description = 'Item deleted: ' + si.Item_Name__c + 
+                                                  '\nItem Name: ' + si.Id +
+                                                  '\nNumber of stock: ' + si.Stock_on_Hand__c);
+                dltStockCases.add(c);
+            }
+        }
+        insert dltStockCases;
+    }
 }
