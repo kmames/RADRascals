@@ -62,7 +62,7 @@ public with sharing class StockItemHandler {
                 insert newCases; 
                 }                
                 public static List<Stock_Item__c> getLowItems(){
-                    List<Stock_Item__c> lowItems = [SELECT ID, Item_Name__c, Item_Stock_is_Low__c, Stock_on_Hand__c FROM Stock_Item__c WHERE Item_Stock_is_Low__c = TRUE];
+                    List<Stock_Item__c> lowItems = [SELECT ID, Item_Name__c, Item_Stock_is_Low__c, Stock_on_Hand__c, Minimum_Stock_Level__c, FROM Stock_Item__c WHERE Item_Stock_is_Low__c = TRUE];
                         return lowItems;
      }
  }                     
