@@ -1,0 +1,17 @@
+public class ReturnLowStockItems {
+
+//We need a method that can be called from elsewhere in our codebase called getLowStockItems
+//This should return a list of all the Stock Items that have a stock on hand count at or below their minimum stock level.
+//It should include the following fields for the Stock Items it returns:
+//ID
+//Item_Name__c
+//Item_Stock_is_Low__c
+//Minimum_Stock_Level__c
+//Stock_on_Hand__c
+    public static list <Stock_Item__c> getLowStockItems() {
+        
+        List<Stock_Item__c> lowStockItems = [SELECT ID, Item_Name__c, Item_Stock_Is_Low__c,Minimum_Stock_Level__c, Stock_on_Hand__c FROM Stock_Item__c WHERE Item_Stock_Is_Low__c=true];
+        system.debug('Low Stock Items: ' + lowStockItems);
+        return lowStockItems;
+    }  
+}
