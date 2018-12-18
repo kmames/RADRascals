@@ -3,77 +3,78 @@ private class StockItemHandler_Test {
 	//My tests failed on this :(
 	@isTest static void testBeforeInsertFunctionality() {
 		//Positive Scenario: insert Stock Item. insert 2nd stock item with same name. 
-			//check that there are >1 items with same name, one of them will have the
-			//regular name and the other will have same name + Duplicate Item.
+		//check that there are >1 items with same name, one of them will have the
+		//regular name and the other will have same name + Duplicate Item.
 		Stock_Item__c testStockItem = new Stock_Item__c();
-        testStockItem.Item_Name__c= 'Rascal Bakeware';
-        insert testStockItem;
-        
-        Stock_Item__c testDupedItem = new Stock_Item__c();
-    	testDupedItem.Item_Name__c = 'Rascal Bakeware';
-        testDupedItem.Description__c = 'Duplicate';
-    	insert testDupedItem;
-        
-        //Lookup inserted duplicate item
-         Stock_Item__c insertedItem=[SELECT Item_Name__c, Description__c FROM Stock_Item__c WHERE Description__c = 'Duplicate'];
-        
-         //Is item listed as Duplicate Item?
-        system.assertEquals('Rascal Bakeware Duplicate Item',insertedItem.Item_Name__c);        
-    system.debug(insertedItem.Item_Name__c);
-        
-		//Negative Scenario: insert two stock items with different names.
-			//check that both of them do not have Duplicate Item in the name.
-		Stock_Item__c otherTestStockItem = new Stock_Item__c();
-        otherTestStockItem.Item_Name__c= 'Different Bakeware';
-        insert otherTestStockItem;
-        
-        Stock_Item__c anotherTestStockItem = new Stock_Item__c();
-        anotherTestStockItem.Item_Name__c = 'Unique Bakeware';
-        insert anotherTestStockItem;
-       
-         //Are items listed as Duplicate Item in error?
-        Stock_Item__c noDupeStockItem=[SELECT Item_Name__c, Description__c FROM Stock_Item__c WHERE Item_Name__c = 'Unique Bakeware Duplicate'];
+		testStockItem.Item_Name__c= 'Rascal Bakeware';
+		insert testStockItem;
 
-      	Stock_Item__c noDupeAgainStockItem=[SELECT Item_Name__c, Description__c FROM Stock_Item__c WHERE Item_Name__c = 'Different Bakeware Duplicate'];
-         
+		Stock_Item__c testDupedItem = new Stock_Item__c();
+		testDupedItem.Item_Name__c = 'Rascal Bakeware';
+		testDupedItem.Description__c = 'Duplicate';
+		insert testDupedItem;
+
+		//Lookup inserted duplicate item
+		 Stock_Item__c insertedItem=[SELECT Item_Name__c, Description__c FROM Stock_Item__c WHERE Description__c = 'Duplicate'];
+
+		//Is item listed as Duplicate Item?
+		system.assertEquals('Rascal Bakeware Duplicate Item',insertedItem.Item_Name__c);        
+		system.debug(***Postiive Test: Name for duplicate = ' + insertedItem.Item_Name__c);
+
+		//Negative Scenario: insert two stock items with different names.
+		//check that both of them do not have Duplicate Item in the name.
+		Stock_Item__c otherTestStockItem = new Stock_Item__c();
+		otherTestStockItem.Item_Name__c= 'Unique Bakeware 1'; //changed Name
+		insert otherTestStockItem;
+
+		Stock_Item__c anotherTestStockItem = new Stock_Item__c();
+		anotherTestStockItem.Item_Name__c = 'Unique Bakeware 2'; //changed nanme
+		insert anotherTestStockItem;
+
+		 //Are items listed as Duplicate Item in error?
+		List<Stock_Item__c> allStockItems=[SELECT Item_Name__c
+						FROM Stock_Item__c 
+						WHERE Item_Name__c LIKE 'Unique Name%Duplicate Item']; //changed variable to list so we can check the size
+		system.debug('***Negative Test: Number of items with Duplicate Item in name = ' + allSTockItems.size());
+		system.assert(allStockItems.size()==0);
 	}
 	
 	@isTest static void testBeforeDeleteFunctionality() {
 		//Positive Scenario:
-			//insert item with stock on hand > 0; delete item; check that case was created.
+		//insert item with stock on hand > 0; delete item; check that case was created.
 		Stock_item__c testStockItemAmount = new Stock_Item__c();
-        testStockItemAmount.Stock_on_Hand__c= 5;
-        testStockItemAmount.Description__c='Above 0';
-        testStockItemAmount.Item_Name__c='Test Delete Pan';
+		testStockItemAmount.Stock_on_Hand__c= 5;
+		testStockItemAmount.Description__c='Above 0';
+		testStockItemAmount.Item_Name__c='Test Delete Pan';
                 insert testStockItemAmount;
-        
-        Stock_Item__c testDelete = [SELECT Id FROM Stock_Item__c WHERE Item_Name__c='Test Delete Pan'];
-        	Delete testDelete;
-        
-       List<Case> newCase = [SELECT Id, Subject FROM Case WHERE Subject = 'In Stock Item Deleted: Test Delete Pan'];
-        System.assertEquals(1, newCase.size());
-        System.Debug('new case Subject:'+newCase);
-        
-		//Negative Scenario:
-			//insert item with stock on hand = 0; delete item; check that case was not created.
-		Stock_item__c testNoStockItemAmount = new Stock_Item__c();
-        testNoStockItemAmount.Stock_on_Hand__c= 0;
-        testNoStockItemAmount.Description__c='At 0';
-       testNoStockItemAmount.Item_Name__c='Test Zero Pan';
-                insert testNoStockItemAmount;
-        
-        Stock_Item__c testNoDelete = [SELECT Id FROM Stock_Item__c WHERE Item_Name__c='Test Zero Pan'];
-        	Delete testNoDelete;
-        
-       List<Case> noCase = [SELECT Id, Subject FROM Case WHERE Subject = 'In Stock Item Deleted: Test Delete Pan'];
-        System.assertEquals(0, newCase.size());
-        System.Debug('new case Subject:'+newCase);
-        
-        //Bulk Scenario:
-        	//insert multiple items some with stock on hand > 0 some = 0; delete all items;
-        	//check the # of cases created = the number of cases with stock on hand > 0.
-	}
+        	delete testStockItemAmount;
+		
+		//Stock_Item__c testDelete = [SELECT Id FROM Stock_Item__c WHERE Item_Name__c='Test Delete Pan']; //don't need
+		//Delete testDelete; //don't need
 
+	        List<Case> newCase = [SELECT Id, Subject FROM Case WHERE Subject = 'In Stock Item Deleted: Test Delete Pan'];
+		System.assertEquals(1, newCase.size());
+		System.Debug('new case Subject:'+newCase);
+
+		//Negative Scenario:
+		//insert item with stock on hand = 0; delete item; check that case was not created.
+		Stock_item__c testNoStockItemAmount = new Stock_Item__c();
+		testNoStockItemAmount.Stock_on_Hand__c= 0;
+		testNoStockItemAmount.Description__c='At 0';
+	        testNoStockItemAmount.Item_Name__c='Test Zero Pan';
+		insert testNoStockItemAmount;
+		delete testNoStockItemAmount; //replaced query and delete with single statement
+
+	        List<Case> noCase = [SELECT Id, Subject FROM Case WHERE Subject = 'In Stock Item Deleted: Test Delete Pan'];
+		System.assertEquals(0, noCase.size()); //there was a typo here - it said newCase instead of noCase
+		System.Debug('new case Subject:'+noCase); //there was  a typo here - it said newCase instead of noCase
+
+		//Bulk Scenario:
+			//insert multiple items some with stock on hand > 0 some = 0; delete all items;
+			//check the # of cases created = the number of cases with stock on hand > 0.
+	}
+	
+	//moving this to separate test class (returnLowStockItems_Test) since the method is in a separate class as well.
 	@isTest static void testGetLowStockItems() {
 		//Positive Scenario:
 			//insert a few items with low stock; check that query returns 1 or more results. (listname.size()>0)
