@@ -1,0 +1,43 @@
+@isTest
+private class ReturnLowStockItems_Test {
+	@isTest static void testGetLowStockItems() {
+		
+		List<Stock_Item__c> newsilist = new List<Stock_Item__c>();
+        
+        //Negative Scenario:
+			//insert a few items without low stock; check that query returns 0 results. (listname.size()=0)
+         Stock_Item__c newsi1 = new Stock_Item__c(); 
+        	newsi1.Item_Name__c='Test Low 1';
+        	newsi1.Minimum_Stock_Level__c=5;
+        	newsi1.Stock_on_Hand__c=10;
+        newsilist.add(newsi1);
+        Stock_Item__c newsi2 = new Stock_Item__c(); 
+        	newsi2.Item_Name__c='Test Low 2';
+        	newsi2.Minimum_Stock_Level__c=2;
+        	newsi2.Stock_on_Hand__c=3;
+        newsilist.add(newsi2);
+        insert newsilist;
+        integer lowStockCount1 = returnLowStockItems.getLowStockItems().size();
+        system.debug('***Positive Test: Expected 0; Actual ' + lowStockCount1);
+        system.assert(lowStockCount1==0);
+        
+        //Positive Scenario:
+			//insert a few items with low stock; check that query returns 1 or more results. (listname.size()>0)
+        newsilist.clear();
+        Stock_Item__c newsi3 = new Stock_Item__c(); 
+        	newsi3.Item_Name__c='Test Low 3';
+        	newsi3.Minimum_Stock_Level__c=5;
+        	newsi3.Stock_on_Hand__c=2;
+        newsilist.add(newsi3);
+        Stock_Item__c newsi4 = new Stock_Item__c(); 
+        	newsi4.Item_Name__c='Test Low 4';
+        	newsi4.Minimum_Stock_Level__c=5;
+        	newsi4.Stock_on_Hand__c=0;
+        newsilist.add(newsi4);
+        insert newsilist;
+        integer lowStockCount2 = returnLowStockItems.getLowStockItems().size();
+        system.debug('***Positive Test: Expected 2; Actual ' + lowStockCount2);
+        system.assert(lowStockCount2==2);
+		
+	}
+}
