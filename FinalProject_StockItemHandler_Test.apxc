@@ -49,9 +49,6 @@ private class StockItemHandler_Test {
                 insert testStockItemAmount;
         	delete testStockItemAmount;
 		
-		//Stock_Item__c testDelete = [SELECT Id FROM Stock_Item__c WHERE Item_Name__c='Test Delete Pan']; //don't need
-		//Delete testDelete; //don't need
-
 	        List<Case> newCase = [SELECT Id, Subject FROM Case WHERE Subject = 'In Stock Item Deleted: Test Delete Pan'];
 		System.assertEquals(1, newCase.size());
 		System.Debug('new case Subject:'+newCase);
@@ -63,25 +60,18 @@ private class StockItemHandler_Test {
 		testNoStockItemAmount.Description__c='At 0';
 	        testNoStockItemAmount.Item_Name__c='Test Zero Pan';
 		insert testNoStockItemAmount;
-		delete testNoStockItemAmount; //replaced query and delete with single statement
+		delete testNoStockItemAmount; 
 
-	        List<Case> noCase = [SELECT Id, Subject FROM Case WHERE Subject = 'In Stock Item Deleted: Test Delete Pan'];
-		System.assertEquals(0, noCase.size()); //there was a typo here - it said newCase instead of noCase
-		System.Debug('new case Subject:'+noCase); //there was  a typo here - it said newCase instead of noCase
+	        List<Case> noCase = [SELECT Id, Subject FROM Case WHERE Subject = 'In Stock Item Deleted: Test Zero Pan'];
+		System.assertEquals(0, noCase.size()); 
+		System.Debug('new case Subject:'+noCase);
 
 		//Bulk Scenario:
 			//insert multiple items some with stock on hand > 0 some = 0; delete all items;
 			//check the # of cases created = the number of cases with stock on hand > 0.
 	}
 	
-	//moving this to separate test class (returnLowStockItems_Test) since the method is in a separate class as well.
-	@isTest static void testGetLowStockItems() {
-		//Positive Scenario:
-			//insert a few items with low stock; check that query returns 1 or more results. (listname.size()>0)
-		//Negative Scenario:
-			//insert a few items without low stock; check that query returns 0 results. (listname.size()=0)
-	}
-
+	
 	@isTest static void packageUploadCoverage() {
 		Stock_Item__c item = new Stock_Item__c();
 		item.Item_Name__c = 'Test';
