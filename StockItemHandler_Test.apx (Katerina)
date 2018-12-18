@@ -1,0 +1,66 @@
+@isTest
+private class StockItemHandler_Test {
+	
+	@isTest static void testBeforeInsertFunctionality() {
+		//Positive Scenario: insert Stock Item. insert 2nd stock item with same name. 
+			//check that the 'Duplicate Item' has been appended to name of 2nd one.
+		Stock_Item__c si1 = new Stock_Item__c();
+       		si1.Item_Name__C='Test Name';
+        insert si1;
+        Stock_Item__c si2 = new Stock_Item__c();
+        	si2.Item_Name__c='Test Name';
+        	si2.Description__c='Duplicate';
+        insert si2;
+        Stock_Item__c dupItem = [SELECT Item_Name__c, Description__c FROM Stock_Item__c WHERE Description__c='Duplicate'];
+        system.debug('***Positive Test: Name for duplicate = ' + dupItem.Item_Name__c);
+        system.assert(dupItem.Item_Name__c=='Test Name Duplicate Item');
+        //Negative Scenario: insert two stock items with different names.
+			//check that both of them do not have Duplicate Item in the name.
+		Stock_Item__c si3 = new Stock_Item__c();
+       		si3.Item_Name__C='Unique Name 1';
+        insert si3;
+        Stock_Item__c si4 = new Stock_Item__c();
+        	si4.Item_Name__c='Unique Name 2';
+        insert si4;
+        List<Stock_Item__c> allStockItems = [SELECT Item_Name__c FROM Stock_Item__c WHERE Item_Name__c LIKE 'Unique Name%' AND Item_Name__c LIKE '%Duplicate Item'];
+        system.debug('***Negative Test: Number of items with Duplicate Item in name = ' + allStockItems.size());
+		system.assert(allStockItems.size()==0);
+	}
+	
+	@isTest static void testBeforeDeleteFunctionality() {
+		//Positive Scenario:
+			//insert item with stock on hand > 0; delete item; check that case was created.
+		Stock_Item__c dltSI1 = new Stock_Item__C();
+        	dltSI1.Item_Name__c='Test Name Delete 1';
+        	dltSI1.Stock_on_Hand__c=5;
+        insert dltSI1;
+        delete dltSI1;
+        List<Case> allCases1 = [SELECT Subject FROM Case WHERE Subject='In Stock Item Deleted: Test Name Delete 1'];
+        system.debug('***Positive Test: Expected 1; Actual ' + allCases1.size());
+        system.assertEquals(1,allCases1.size());
+		//Negative Scenario:
+			//insert item with stock on hand = 0; delete item; check that case was not created.
+		Stock_Item__c dltSI2 = new Stock_Item__C();
+        	dltSI2.Item_Name__c='Test Name Delete 2';
+        	dltSI2.Stock_on_Hand__c=0;
+        insert dltSI2;
+        delete dltSI2;
+        List<Case> allCases2 = [SELECT Subject FROM Case WHERE Subject='In Stock Item Deleted: Test Name Delete 2'];
+        system.debug('***Negative Test: Expected 0; Actual ' + allCases2.size());
+        system.assertEquals(0,allCases2.size());
+        //Bulk Scenario:
+        	//insert multiple items some with stock on hand > 0 some = 0; delete all items;
+        	//check the # of cases created = the number of cases with stock on hand > 0.
+	}
+
+	@isTest static void packageUploadCoverage() {
+		Stock_Item__c item = new Stock_Item__c();
+		item.Item_Name__c = 'Test';
+		item.Description__c = 'Test';
+		item.Minimum_Stock_Level__c =3;
+
+		insert item;
+
+	}
+	
+}
