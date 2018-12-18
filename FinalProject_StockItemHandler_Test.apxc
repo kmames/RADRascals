@@ -1,6 +1,6 @@
 @isTest
 private class StockItemHandler_Test {
-	//My tests failed on this :(
+	
 	@isTest static void testBeforeInsertFunctionality() {
 		//Positive Scenario: insert Stock Item. insert 2nd stock item with same name. 
 		//check that there are >1 items with same name, one of them will have the
@@ -24,18 +24,18 @@ private class StockItemHandler_Test {
 		//Negative Scenario: insert two stock items with different names.
 		//check that both of them do not have Duplicate Item in the name.
 		Stock_Item__c otherTestStockItem = new Stock_Item__c();
-		otherTestStockItem.Item_Name__c= 'Unique Bakeware 1'; //changed Name
+		otherTestStockItem.Item_Name__c= 'Unique Bakeware 1'; 
 		insert otherTestStockItem;
 
 		Stock_Item__c anotherTestStockItem = new Stock_Item__c();
-		anotherTestStockItem.Item_Name__c = 'Unique Bakeware 2'; //changed nanme
+		anotherTestStockItem.Item_Name__c = 'Unique Bakeware 2'; 
 		insert anotherTestStockItem;
 
 		 //Are items listed as Duplicate Item in error?
 		List<Stock_Item__c> allStockItems=[SELECT Item_Name__c
 						FROM Stock_Item__c 
-						WHERE Item_Name__c LIKE 'Unique Name%Duplicate Item']; //changed variable to list so we can check the size
-		system.debug('***Negative Test: Number of items with Duplicate Item in name = ' + allSTockItems.size());
+						WHERE Item_Name__c LIKE 'Unique Name%Duplicate Item']; 
+		system.debug('***Negative Test: Number of items with Duplicate Item in name = ' + allStockItems.size());
 		system.assert(allStockItems.size()==0);
 	}
 	
